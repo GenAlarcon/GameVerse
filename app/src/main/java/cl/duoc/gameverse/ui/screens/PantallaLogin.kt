@@ -1,4 +1,4 @@
-package cl.duoc.gameverse.ui
+package cl.duoc.gameverse.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import cl.duoc.gameverse.Usuario
+import cl.duoc.gameverse.domain.model.Usuario
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

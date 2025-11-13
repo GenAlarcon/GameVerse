@@ -1,4 +1,4 @@
-package cl.duoc.gameverse.ui
+package cl.duoc.gameverse.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*

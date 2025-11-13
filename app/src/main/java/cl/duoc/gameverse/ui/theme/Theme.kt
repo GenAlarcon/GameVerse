@@ -1,4 +1,4 @@
-package cl.duoc.gameverse.ui
+package cl.duoc.gameverse.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

@@ -12,17 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import cl.duoc.gameverse.ui.GameVerseTheme
-import cl.duoc.gameverse.ui.HomeScreen
-import cl.duoc.gameverse.ui.PantallaLogin
-import cl.duoc.gameverse.ui.PantallaRegistro
-
-// Modelo de usuario
-data class Usuario(
-    val nombre: String,
-    val correo: String,
-    val contrasena: String
-)
+import cl.duoc.gameverse.ui.theme.GameVerseTheme
+import cl.duoc.gameverse.ui.screens.HomeScreen
+import cl.duoc.gameverse.ui.screens.PantallaLogin
+import cl.duoc.gameverse.ui.screens.PantallaRegistro
+import cl.duoc.gameverse.domain.model.Usuario
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

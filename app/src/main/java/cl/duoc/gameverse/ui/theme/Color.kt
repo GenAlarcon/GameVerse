@@ -1,4 +1,4 @@
-package cl.duoc.gameverse.ui
+package cl.duoc.gameverse.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

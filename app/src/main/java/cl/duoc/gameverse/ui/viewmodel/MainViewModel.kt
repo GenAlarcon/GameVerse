@@ -1,4 +1,4 @@
-package cl.duoc.gameverse.ui
+package cl.duoc.gameverse.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
