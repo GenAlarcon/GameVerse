@@ -12,11 +12,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import cl.duoc.gameverse.domain.model.Usuario
+import cl.duoc.gameverse.navigation.AppRoutes
+import cl.duoc.gameverse.ui.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaLogin(navController: NavController, usuarios: List<Usuario>) {
+fun PantallaLogin(
+    navController: NavController,
+    userViewModel: UserViewModel
+) {
 
     var identificador by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
@@ -30,10 +34,10 @@ fun PantallaLogin(navController: NavController, usuarios: List<Usuario>) {
             .padding(20.dp),
         verticalArrangement = Arrangement.Center
     ) {
+
         Text("Iniciar sesión", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Campo: nombre o correo
         OutlinedTextField(
             value = identificador,
             onValueChange = {
@@ -47,7 +51,6 @@ fun PantallaLogin(navController: NavController, usuarios: List<Usuario>) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Campo: contraseña
         OutlinedTextField(
             value = contrasena,
             onValueChange = {
@@ -66,21 +69,32 @@ fun PantallaLogin(navController: NavController, usuarios: List<Usuario>) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botón iniciar sesión tradicional
         Button(
             onClick = {
-                val usuarioEncontrado = usuarios.find {
-                    (it.nombre.equals(identificador, ignoreCase = true)
-                            || it.correo.equals(identificador, ignoreCase = true))
-                            && it.contrasena == contrasena
-                }
+
+                // 🔥 Usamos el ViewModel para validar el login
+                val usuarioEncontrado = userViewModel.validarLogin(
+                    identificador,
+                    contrasena
+                )
 
                 if (usuarioEncontrado != null) {
-                    Toast.makeText(contexto, "¡Bienvenido ${usuarioEncontrado.nombre}! 🎮", Toast.LENGTH_LONG).show()
-                    // Aquí podrías navegar a otra pantalla principal si quieres
+
+                    Toast.makeText(
+                        contexto,
+                        "¡Bienvenido ${usuarioEncontrado.nombre}! 🎮",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    // Navegar al Home
+                    navController.navigate(AppRoutes.FORUM_HOME) {
+                        popUpTo(AppRoutes.LOGIN) { inclusive = true }
+                    }
+
                 } else {
                     error = "Usuario o contraseña incorrectos"
                 }
+
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -89,24 +103,30 @@ fun PantallaLogin(navController: NavController, usuarios: List<Usuario>) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Botón de Google Sign-In (sin implementación todavía)
         Button(
             onClick = {
-                Toast.makeText(contexto, "Google Sign-In aún no implementado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    contexto,
+                    "Google Sign-In aún no implementado",
+                    Toast.LENGTH_SHORT
+                ).show()
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
         ) {
             Text("Iniciar sesión con Google")
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Enlace para ir a registrarse
         Text(
             text = "¿No tienes cuenta? Regístrate aquí",
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable { navController.navigate("registro") }
+            modifier = Modifier.clickable {
+                navController.navigate("registro")
+            }
         )
     }
 }
