@@ -33,7 +33,8 @@ fun AppNavHost(navController: NavHostController) {
         composable(AppRoutes.HOME) {
             HomeScreen(
                 onPrimaryAction = { navController.navigate(AppRoutes.LOGIN) },
-                onSecondaryAction = { navController.navigate(AppRoutes.REGISTRO) }
+                onSecondaryAction = { navController.navigate(AppRoutes.REGISTRO) },
+                onForumAction = { navController.navigate(AppRoutes.FORUM_HOME) }
             )
         }
 

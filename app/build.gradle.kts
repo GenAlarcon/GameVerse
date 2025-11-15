@@ -96,4 +96,11 @@ dependencies {
 
     //Login con Google
     implementation("com.google.android.gms:play-services-auth:21.0.0")
+
+    //Iconos predeterminados
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
+
+    // Íconos normales
+    implementation("androidx.compose.material:material-icons-core:1.6.8")
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
 }

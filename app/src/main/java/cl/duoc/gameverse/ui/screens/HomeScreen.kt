@@ -20,7 +20,8 @@ import androidx.compose.foundation.layout.height
 @Composable
 fun HomeScreen(
     onPrimaryAction: () -> Unit,
-    onSecondaryAction: () -> Unit
+    onSecondaryAction: () -> Unit,
+    onForumAction: () -> Unit // <-- botón de prueba
 ) {
     Scaffold(
         topBar = {
@@ -36,25 +37,21 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Imagen del logo (recurso en drawable)
             Image(
                 painter = painterResource(id = R.drawable.icono2),
                 contentDescription = "Logo",
-                modifier = Modifier
-                    .size(120.dp),
+                modifier = Modifier.size(120.dp),
                 contentScale = ContentScale.Fit
             )
-            
-            // Título principal
+
             Text(
                 text = "Bienvenido a GameVerse",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary // usar MaterialTheme (Parte 2.5)
+                color = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Subtítulo / descripción
             Text(
                 text = "¿Quieres ingresar?",
                 style = MaterialTheme.typography.bodyMedium,
@@ -63,7 +60,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botones de acción
+            // Botones originales
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -80,6 +77,16 @@ fun HomeScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) { Text("Registrarse") }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botón de prueba para ir al foro
+            Button(
+                onClick = onForumAction,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+            ) { Text("Ir al Foro (Prueba)") }
         }
     }
 }
@@ -87,7 +94,9 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onPrimaryAction = { /*TODO*/ }) {
-
-    }
+    HomeScreen(
+        onPrimaryAction = { /*TODO*/ },
+        onSecondaryAction = { /*TODO*/ },
+        onForumAction = { /*TODO navegar a ForumHome*/ }
+    )
 }
