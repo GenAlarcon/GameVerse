@@ -14,7 +14,6 @@ import androidx.navigation.NavHostController
 import cl.duoc.gameverse.navigation.NavegacionBar
 import androidx.compose.ui.res.painterResource
 import cl.duoc.gameverse.R
-import cl.duoc.gameverse.navigation.AppRoutes
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
 
 @Composable
@@ -46,7 +45,7 @@ fun PerfilScreen(navController: NavHostController, userViewModel: UserViewModel)
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Nombre del usuario logueado
+            // Nombre del usuario o Invitado
             Text(
                 text = usuario?.nombre ?: "Invitado",
                 style = MaterialTheme.typography.titleLarge
@@ -54,66 +53,57 @@ fun PerfilScreen(navController: NavHostController, userViewModel: UserViewModel)
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = "Sobre mí: Me gustan los videojuegos y aprender.")
-
-            Spacer(modifier = Modifier.height(24.dp))
-
+            // Sobre mí
             Text(
-                text = "Juegos jugados este año: 12",
-                style = MaterialTheme.typography.titleMedium
+                text = if (usuario != null)
+                    "Correo: ${usuario.correo}"
+                else
+                    "Inicia sesión para ver tu información."
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "Jugando ahora:",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // CARD
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-
-                    Image(
-                        painter = painterResource(id = R.drawable.little_nightmares_3),
-                        contentDescription = "Juego actual",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp),
-                        contentScale = ContentScale.Crop
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(text = "Little Nightmares 3")
-                    Text(text = "Progreso: 45%")
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    LinearProgressIndicator(progress = 0.45f)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Botón Cerrar sesión solo si hay usuario logueado
+            // Mostrar card SOLO si hay usuario
             if (usuario != null) {
+
+                Text("Jugando ahora:", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.little_nightmares_3),
+                            contentDescription = "Juego actual",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text("Little Nightmares 3")
+                        Text("Progreso: 45%")
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        LinearProgressIndicator(progress = 0.45f)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // BOTÓN CERRAR SESIÓN
                 Button(
                     onClick = {
                         userViewModel.cerrarSesion()
-                        navController.navigate(AppRoutes.LOGIN) {
-                            popUpTo(AppRoutes.PERFIL) { inclusive = true }
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = true }
                         }
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
                 ) {
                     Text("Cerrar sesión")
                 }
@@ -121,3 +111,4 @@ fun PerfilScreen(navController: NavHostController, userViewModel: UserViewModel)
         }
     }
 }
+
