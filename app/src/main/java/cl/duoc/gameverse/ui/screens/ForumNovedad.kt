@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,21 +23,27 @@ fun ForumNovedad(
     navController: NavHostController,
     forumViewModel: ForumViewModel
 ) {
-    // Filtramos los posts por la categoría "Novedades"
     val posts: List<Post> = forumViewModel.getPostsByCategory("Novedades")
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Novedades") } // Nombre fijo de la categoría
+                title = { Text("Novedades") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
-            NavegacionBar(navController) // Mantener la barra inferior
+            NavegacionBar(navController)
         }
     ) { innerPadding ->
 
-        // Lista vertical de posts tipo Reddit
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
@@ -51,19 +59,17 @@ fun ForumNovedad(
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        // Título del post
+
                         Text(
                             text = post.titulo,
                             style = MaterialTheme.typography.titleMedium
                         )
 
-                        // Autor del post
                         Text(
                             text = "Autor: ${post.autor}",
                             style = MaterialTheme.typography.bodySmall
                         )
 
-                        // Favoritos: estrella amarilla
                         Row(
                             modifier = Modifier.padding(top = 4.dp),
                             verticalAlignment = Alignment.CenterVertically

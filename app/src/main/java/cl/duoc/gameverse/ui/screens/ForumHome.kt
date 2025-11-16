@@ -50,42 +50,54 @@ fun ForumHome(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Título de la sección
             Text(
                 text = "Categorías",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            // Lista de categorías y sus rutas fijas
             val categorias = listOf(
                 "Novedades" to AppRoutes.FORUM_NOVEDADES,
                 "Juegos" to AppRoutes.FORUM_JUEGOS,
-                "Proximamente" to AppRoutes.FORUM_PROXIMAMENTE,
+                "Próximamente" to AppRoutes.FORUM_PROXIMAMENTE,
                 "Tendencia" to AppRoutes.FORUM_TENDENCIA
             )
 
-            categorias.forEach { (nombre, ruta) ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .clickable { navController.navigate(ruta) }, // Navegación fija
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFB2E2C8)),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .height(80.dp)
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+            // GRID DE 2x2
+            Column(Modifier.fillMaxWidth()) {
+
+                categorias.chunked(2).forEach { fila ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text(
-                            text = nombre,
-                            style = MaterialTheme.typography.titleMedium,
-                            textAlign = TextAlign.Center
-                        )
+
+                        fila.forEach { (nombre, ruta) ->
+                            Card(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(130.dp)
+                                    .clickable { navController.navigate(ruta) },
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFFB2E2C8) // verde pastel
+                                ),
+                                elevation = CardDefaults.cardElevation(6.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = nombre,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }

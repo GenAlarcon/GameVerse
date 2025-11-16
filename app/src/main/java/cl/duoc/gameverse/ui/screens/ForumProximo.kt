@@ -11,9 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import cl.duoc.gameverse.domain.model.Post
 import cl.duoc.gameverse.ui.viewmodel.ForumViewModel
 import cl.duoc.gameverse.navigation.NavegacionBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,11 +28,21 @@ fun ForumProximo(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Proximamente") } // Título de la categoría
+                title = { Text("Próximamente") },
+
+                // FLECHA DE RETROCESO
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
-            NavegacionBar(navController) // Misma barra de navegación inferior
+            NavegacionBar(navController)
         }
     ) { innerPadding ->
 
@@ -50,17 +61,17 @@ fun ForumProximo(
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        // Título del post
+
                         Text(
                             text = post.titulo,
                             style = MaterialTheme.typography.titleMedium
                         )
-                        // Autor del post
+
                         Text(
                             text = "Autor: ${post.autor}",
                             style = MaterialTheme.typography.bodySmall
                         )
-                        // Icono de favorito
+
                         Row(
                             modifier = Modifier.padding(top = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
