@@ -62,7 +62,9 @@ fun AppNavHost(navController: NavHostController) {
             )
         }
         composable(AppRoutes.PERFIL) {
-            PerfilScreen(navController = navController, userViewModel = userViewModel)
+            PerfilScreen(
+                navController = navController,
+                userViewModel = userViewModel)
         }
 
     }
