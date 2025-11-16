@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import cl.duoc.gameverse.navigation.AppRoutes
 import cl.duoc.gameverse.navigation.NavegacionBar
 import cl.duoc.gameverse.ui.viewmodel.ForumViewModel
 
@@ -22,8 +23,6 @@ fun ForumHome(
     navController: NavHostController,
     forumViewModel: ForumViewModel
 ) {
-    val categorias = listOf("Juegos", "Novedades", "Proximamente", "Tendencia")
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,22 +50,27 @@ fun ForumHome(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            // Título de la sección
             Text(
                 text = "Categorías",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            // Rectángulos verticales
-            categorias.forEach { categoria ->
+            // Lista de categorías y sus rutas fijas
+            val categorias = listOf(
+                "Novedades" to AppRoutes.FORUM_NOVEDADES,
+                "Juegos" to AppRoutes.FORUM_JUEGOS,
+                "Proximamente" to AppRoutes.FORUM_PROXIMAMENTE,
+                "Tendencia" to AppRoutes.FORUM_TENDENCIA
+            )
+
+            categorias.forEach { (nombre, ruta) ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
-                        .clickable {
-                            // Navegar a la pantalla de foros de la categoría
-                            //navController.navigate("foros/$categoria")
-                        },
+                        .clickable { navController.navigate(ruta) }, // Navegación fija
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFB2E2C8)),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
@@ -77,12 +81,11 @@ fun ForumHome(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = categoria,
+                            text = nombre,
                             style = MaterialTheme.typography.titleMedium,
                             textAlign = TextAlign.Center
                         )
                     }
-
                 }
             }
         }
