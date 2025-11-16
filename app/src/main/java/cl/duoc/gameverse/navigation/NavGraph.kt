@@ -9,14 +9,16 @@ import cl.duoc.gameverse.ui.screens.*
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
 import cl.duoc.gameverse.ui.viewmodel.ForumViewModel
 import cl.duoc.gameverse.domain.model.Usuario
+import cl.duoc.gameverse.ui.viewmodel.GameViewModel
+import cl.duoc.gameverse.ui.screens.ForumJuegosScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
 
     val userViewModel: UserViewModel = viewModel()
-    val forumViewModel: ForumViewModel = viewModel() // ViewModel compartido entre pantallas de foros
+    val forumViewModel: ForumViewModel = viewModel()
+    val gameViewModel: GameViewModel = viewModel ()
 
-    // Usuarios de prueba
     if (userViewModel.usuarios.isEmpty()) {
         userViewModel.registrarUsuario(Usuario("Gamer1", "gamer1@gmail.com", "1234"))
         userViewModel.registrarUsuario(Usuario("Juan", "juan@gmail.com", "abcd"))
@@ -52,13 +54,11 @@ fun AppNavHost(navController: NavHostController) {
             PerfilScreen(navController, userViewModel)
         }
 
-        // Pantallas concretas de cada categoría
         composable(AppRoutes.FORUM_NOVEDADES) {
             ForumNovedad(navController = navController, forumViewModel = forumViewModel)
         }
-
         composable(AppRoutes.FORUM_JUEGOS) {
-            //ForumJuegos(navController = navController, forumViewModel = forumViewModel)
+            ForumJuegosScreen(navController = navController, gameViewModel = gameViewModel)
         }
 
         composable(AppRoutes.FORUM_PROXIMAMENTE) {

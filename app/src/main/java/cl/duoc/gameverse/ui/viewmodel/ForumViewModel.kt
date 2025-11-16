@@ -19,8 +19,6 @@ class ForumViewModel : ViewModel() {
         private set
 
     init {
-        // Datos de ejemplo tipo Reddit con categorías
-        // Cada post tiene: id, título, categoría y autor
         posts = listOf(
             Post("1", "Nuevo juego lanzado", "Novedades", "Admin"),
             Post("2", "Evento especial este fin de semana", "Proximamente", "Admin"),
