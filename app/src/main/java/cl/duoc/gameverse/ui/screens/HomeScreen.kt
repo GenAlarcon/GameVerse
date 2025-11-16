@@ -2,32 +2,34 @@ package cl.duoc.gameverse.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cl.duoc.gameverse.R
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import cl.duoc.gameverse.ui.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    userViewModel: UserViewModel,
     onPrimaryAction: () -> Unit,
     onSecondaryAction: () -> Unit,
-    onForumAction: () -> Unit // <-- botón de prueba
+    onForumAction: () -> Unit
 ) {
+
+    val usuario = userViewModel.usuarioActual.value
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Home") })
         }
     ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -40,63 +42,57 @@ fun HomeScreen(
             Image(
                 painter = painterResource(id = R.drawable.icono2),
                 contentDescription = "Logo",
-                modifier = Modifier.size(120.dp),
-                contentScale = ContentScale.Fit
+                modifier = Modifier.size(120.dp)
             )
 
             Text(
-                text = "Bienvenido a GameVerse",
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                text = if (usuario != null)
+                    "Bienvenido ${usuario.nombre}"
+                else
+                    "Bienvenido a GameVerse",
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "¿Quieres ingresar?",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botones originales
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = onPrimaryAction,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text("Iniciar Sesión") }
+            // Si NO está logueado mostrar botones de login
+            if (usuario == null) {
 
-                OutlinedButton(
-                    onClick = onSecondaryAction,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text("Registrarse") }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = onPrimaryAction,
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Iniciar Sesión") }
+
+                    OutlinedButton(
+                        onClick = onSecondaryAction,
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Registrarse") }
+                }
+            } else {
+                // Si está logueado mostrar botón Cerrar Sesión
+                Button(
+                    onClick = { userViewModel.cerrarSesion() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Cerrar sesión")
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón de prueba para ir al foro
+            // Botón foro siempre visible
             Button(
                 onClick = onForumAction,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
-            ) { Text("Ir al Foro (Prueba)") }
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ir al Foro")
+            }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen(
-        onPrimaryAction = { /*TODO*/ },
-        onSecondaryAction = { /*TODO*/ },
-        onForumAction = { /*TODO navegar a ForumHome*/ }
-    )
 }

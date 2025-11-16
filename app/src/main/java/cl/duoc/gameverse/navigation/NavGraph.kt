@@ -12,6 +12,7 @@ import cl.duoc.gameverse.ui.screens.ForumHome
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
 import cl.duoc.gameverse.ui.viewmodel.ForumViewModel
 import cl.duoc.gameverse.domain.model.Usuario
+import cl.duoc.gameverse.ui.screens.PerfilScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -32,6 +33,7 @@ fun AppNavHost(navController: NavHostController) {
 
         composable(AppRoutes.HOME) {
             HomeScreen(
+                userViewModel = userViewModel,
                 onPrimaryAction = { navController.navigate(AppRoutes.LOGIN) },
                 onSecondaryAction = { navController.navigate(AppRoutes.REGISTRO) },
                 onForumAction = { navController.navigate(AppRoutes.FORUM_HOME) }
@@ -59,5 +61,9 @@ fun AppNavHost(navController: NavHostController) {
                 forumViewModel = forumViewModel
             )
         }
+        composable(AppRoutes.PERFIL) {
+            PerfilScreen(navController = navController, userViewModel = userViewModel)
+        }
+
     }
 }

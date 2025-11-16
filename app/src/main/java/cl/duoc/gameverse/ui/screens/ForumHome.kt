@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Message
+import cl.duoc.gameverse.navigation.AppRoutes
+import cl.duoc.gameverse.navigation.NavegacionBar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,33 +54,7 @@ fun ForumHome(
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = Color(0xFF00A86B)) { // verde
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    selected = false,
-                    onClick = { /* Navegar Home */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
-                    selected = false,
-                    onClick = { /* Navegar búsqueda */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Add, contentDescription = "Agregar") },
-                    selected = false,
-                    onClick = { /* Agregar post */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.TrendingUp, contentDescription = "Progreso") },
-                    selected = false,
-                    onClick = { /* Ir a progreso */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
-                    selected = false,
-                    onClick = { /* Ir a perfil */ }
-                )
-            }
+            NavegacionBar(navController)
         },
     ) { innerPadding ->
 

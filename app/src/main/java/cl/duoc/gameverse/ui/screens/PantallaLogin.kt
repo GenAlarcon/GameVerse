@@ -72,7 +72,7 @@ fun PantallaLogin(
         Button(
             onClick = {
 
-                // 🔥 Usamos el ViewModel para validar el login
+                // Usamos el ViewModel para validar el login
                 val usuarioEncontrado = userViewModel.validarLogin(
                     identificador,
                     contrasena
