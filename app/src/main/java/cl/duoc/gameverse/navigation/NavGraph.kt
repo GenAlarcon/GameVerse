@@ -66,7 +66,7 @@ fun AppNavHost(navController: NavHostController) {
         }
 
         composable(AppRoutes.FORUM_TENDENCIA) {
-            //ForumTendencia(navController = navController, forumViewModel = forumViewModel)
+            ForumTendencia(navController = navController)
         }
 
     }
