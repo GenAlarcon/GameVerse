@@ -2,18 +2,22 @@ package cl.duoc.gameverse.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import cl.duoc.gameverse.navigation.NavegacionBar
-import androidx.compose.ui.res.painterResource
 import cl.duoc.gameverse.R
+import cl.duoc.gameverse.domain.model.JuegoUsuario
+import cl.duoc.gameverse.navigation.NavegacionBar
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
 
 @Composable
@@ -24,91 +28,200 @@ fun PerfilScreen(navController: NavHostController, userViewModel: UserViewModel)
     Scaffold(
         bottomBar = { NavegacionBar(navController) }
     ) { padding ->
-
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(vertical = 16.dp)
         ) {
 
-            // Avatar
-            Image(
-                painter = painterResource(id = R.drawable.avatar),
-                contentDescription = "Avatar",
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+            item {
+                Image(
+                    painter = painterResource(id = R.drawable.avatar),
+                    contentDescription = "Avatar",
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = usuario?.nombre ?: "Invitado",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = if (usuario != null)
+                        "Correo: ${usuario.correo}"
+                    else
+                        "Inicia sesión para ver tu información."
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Nombre del usuario o Invitado
-            Text(
-                text = usuario?.nombre ?: "Invitado",
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Sobre mí
-            Text(
-                text = if (usuario != null)
-                    "Correo: ${usuario.correo}"
-                else
-                    "Inicia sesión para ver tu información."
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Mostrar card SOLO si hay usuario
             if (usuario != null) {
 
-                Text("Jugando ahora:", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-
-                        Image(
-                            painter = painterResource(id = R.drawable.little_nightmares_3),
-                            contentDescription = "Juego actual",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(150.dp),
-                            contentScale = ContentScale.Crop
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text("Little Nightmares 3")
-                        Text("Progreso: 45%")
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        LinearProgressIndicator(progress = 0.45f)
-                    }
+                item {
+                    Text(
+                        "Jugando ahora:",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.fillMaxWidth() // Alinea a la izquierda
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                val juegoEnCurso = userViewModel.juegoEnCurso
 
-                // BOTÓN CERRAR SESIÓN
-                Button(
-                    onClick = {
-                        userViewModel.cerrarSesion()
-                        navController.navigate("home") {
-                            popUpTo("home") { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Cerrar sesión")
+                item {
+                    if (juegoEnCurso != null) {
+                        JugandoAhoraCard(
+                            juegoUsuario = juegoEnCurso,
+                            onProgresoChange = { nuevoProgreso ->
+                                userViewModel.actualizarProgresoEnCurso(nuevoProgreso)
+                            }
+                        )
+                    } else {
+                        Text(
+                            "No tienes ningún juego marcado como 'Jugando ahora'.",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    Text(
+                        "Mis Próximas Aventuras",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.fillMaxWidth() // Alinea a la izquierda
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                val aventuras = userViewModel.proximasAventuras
+
+                if (aventuras.isEmpty()) {
+                    item {
+                        Text(
+                            "Tu lista de próximas aventuras está vacía.",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                } else {
+                    items(aventuras, key = { juegoUsuario -> juegoUsuario.game.id } ) { juegoUsuario ->
+                        AventuraItem(
+                            juegoUsuario = juegoUsuario,
+                            onMoverJuego = {
+                                userViewModel.moverJuegoA_EnCurso(juegoUsuario)
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp)) // Espacio entre juegos
+                    }
+                }
+                // --- BOTÓN CERRAR SESIÓN ---
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = {
+                            userViewModel.cerrarSesion()
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = true }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Cerrar sesión")
+                    }
                 }
             }
         }
     }
 }
 
+@Composable
+fun JugandoAhoraCard(
+    juegoUsuario: JuegoUsuario,
+    onProgresoChange: (Float) -> Unit
+) {
+    val game = juegoUsuario.game
+    val progreso = juegoUsuario.progreso
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFB2E2C8))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Image(
+                painter = painterResource(id = game.imageResId),
+                contentDescription = game.nombre,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(game.nombre, style = MaterialTheme.typography.titleLarge)
+            Text(game.genero, style = MaterialTheme.typography.bodyMedium)
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text("Progreso: ${(progreso * 100).toInt()}%")
+            LinearProgressIndicator(
+                progress = { progreso },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Slider(
+                value = progreso,
+                onValueChange = onProgresoChange, // Llama a la función del ViewModel
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun AventuraItem(
+    juegoUsuario: JuegoUsuario,
+    onMoverJuego: () -> Unit // Función para moverlo a "Jugando ahora"
+) {
+    val game = juegoUsuario.game
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFB2E2C8)) // Color verde
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = game.imageResId),
+                contentDescription = game.nombre,
+                modifier = Modifier
+                    .size(80.dp)
+                    .aspectRatio(3f / 4f),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Columna para el texto y el botón
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(game.nombre, style = MaterialTheme.typography.titleLarge)
+                Text(game.genero, style = MaterialTheme.typography.bodyMedium)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Botón para mover el juego
+                Button(onClick = onMoverJuego) {
+                    Text("Jugar ahora")
+                }
+            }
+        }
+    }
+}

@@ -47,7 +47,7 @@ fun AppNavHost(navController: NavHostController) {
         }
 
         composable(AppRoutes.FORUM_HOME) {
-            ForumHome(navController, forumViewModel)
+            ForumHome(forumViewModel = forumViewModel, navController = navController, userViewModel = userViewModel)
         }
 
         composable(AppRoutes.PERFIL) {
@@ -58,7 +58,7 @@ fun AppNavHost(navController: NavHostController) {
             ForumNovedad(navController = navController, forumViewModel = forumViewModel)
         }
         composable(AppRoutes.FORUM_JUEGOS) {
-            ForumJuegosScreen(navController = navController, gameViewModel = gameViewModel)
+            ForumJuegosScreen(navController = navController, gameViewModel = gameViewModel, userViewModel = userViewModel)
         }
 
         composable(AppRoutes.FORUM_PROXIMAMENTE) {

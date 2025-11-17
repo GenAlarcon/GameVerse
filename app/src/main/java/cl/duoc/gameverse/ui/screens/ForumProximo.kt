@@ -22,7 +22,6 @@ fun ForumProximo(
     navController: NavHostController,
     forumViewModel: ForumViewModel
 ) {
-    // Filtramos solo los posts de la categoría "Proximamente"
     val posts = forumViewModel.getPostsByCategory("Proximamente")
 
     Scaffold(

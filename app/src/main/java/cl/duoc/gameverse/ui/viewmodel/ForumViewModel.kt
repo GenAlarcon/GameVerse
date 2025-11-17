@@ -8,40 +8,33 @@ import cl.duoc.gameverse.domain.model.Post
 
 class ForumViewModel : ViewModel() {
 
-    // Lista reactiva de posts
-    // Se utiliza mutableStateOf para que Compose detecte cambios automáticamente
+
     var posts by mutableStateOf<List<Post>>(emptyList())
         private set
-
-    // Favoritos: ids de posts
-    // Set de strings para almacenar los IDs de los posts marcados como favoritos
     var favoritos by mutableStateOf<Set<String>>(emptySet())
         private set
 
     init {
         posts = listOf(
-            Post("1", "Nuevo juego lanzado", "Novedades", "Admin"),
-            Post("2", "Evento especial este fin de semana", "Proximamente", "Admin"),
-            Post("3", "Mejores tips de juego", "Juegos", "Gamer1"),
-            Post("4", "Top tendencias de la semana", "Tendencia", "Gamer2"),
-            Post("5", "Actualización del parche 1.2", "Novedades", "Admin"),
-            Post("6", "Próximo torneo online", "Proximamente", "Juan")
+            Post("1", "Nuevo juego lanzado", "¡Acaba de salir 'Cyberpunk 2'!", "Novedades", "Admin"),
+            Post("2", "Evento especial", "No se pierdan el evento de doble XP este finde.", "Proximamente", "Admin"),
+            Post("3", "Mejores tips", "Mi tip es: no corras y siempre guarda la partida.", "Juegos", "Gamer1"),
+            Post("4", "Top tendencias", "El juego más visto esta semana es Elden Ring, otra vez.", "Tendencia", "Gamer2"),
+            Post("5", "Actualización 1.2", "El parche 1.2 arregla bugs de físicas en el juego.", "Novedades", "Admin"),
+            Post("6", "Torneo online", "¡Inscripciones abiertas para el torneo de Valorant!", "Proximamente", "Juan")
         )
     }
 
-    // Función para agregar un nuevo post
     fun agregarPost(post: Post) {
         posts = posts + post
     }
 
-    // Función para eliminar un post por su ID
-    // También se elimina de la lista de favoritos si estaba marcado
+
     fun eliminarPost(postId: String) {
         posts = posts.filter { it.id != postId }
         favoritos = favoritos - postId
     }
 
-    // Función para marcar o desmarcar un post como favorito
     fun toggleFavorito(postId: String) {
         favoritos = if (favoritos.contains(postId)) {
             favoritos - postId
@@ -49,10 +42,13 @@ class ForumViewModel : ViewModel() {
             favoritos + postId
         }
     }
-
-    // Función para obtener posts filtrados por categoría
-    // Devuelve solo los posts cuya categoría coincida con el parámetro
     fun getPostsByCategory(categoria: String): List<Post> {
         return posts.filter { it.categoria == categoria }
+    }
+    fun getPostsByAuthor(authorName: String): List<Post> {
+        return posts.filter {
+            it.autor.equals(authorName, ignoreCase = true) &&
+                    it.categoria == null
+        }
     }
 }

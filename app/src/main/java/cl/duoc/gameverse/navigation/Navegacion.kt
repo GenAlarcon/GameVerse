@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Forum
@@ -23,7 +24,7 @@ fun NavegacionBar(navController: NavController) {
                     launchSingleTop = true
                 }
             },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") }
+            icon = { Icon(Icons.Default.ArrowCircleLeft, contentDescription = "Home") }
         )
 
         // FORO
@@ -34,7 +35,7 @@ fun NavegacionBar(navController: NavController) {
                     launchSingleTop = true
                 }
             },
-            icon = { Icon(Icons.Default.Forum, contentDescription = "Foro") }
+            icon = { Icon(Icons.Default.Home, contentDescription = "Foro") }
         )
 
         // PERFIL

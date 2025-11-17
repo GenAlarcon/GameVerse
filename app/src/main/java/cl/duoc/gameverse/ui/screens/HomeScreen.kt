@@ -91,7 +91,7 @@ fun HomeScreen(
                 onClick = onForumAction,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Ir al Foro")
+                Text("Ir a inicio")
             }
         }
     }
