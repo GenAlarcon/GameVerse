@@ -62,7 +62,7 @@ fun AppNavHost(navController: NavHostController) {
         }
 
         composable(AppRoutes.FORUM_PROXIMAMENTE) {
-            ForumProximo(navController = navController, forumViewModel = forumViewModel)
+            ForumProximo(navController = navController)
         }
 
         composable(AppRoutes.FORUM_TENDENCIA) {
