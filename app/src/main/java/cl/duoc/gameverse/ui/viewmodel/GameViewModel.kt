@@ -1,38 +1,41 @@
 package cl.duoc.gameverse.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import cl.duoc.gameverse.GameVerseApplication
 import cl.duoc.gameverse.data.Repository
 import cl.duoc.gameverse.domain.model.Game
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 data class GameCatalogUiState(
     val juegos: List<Game> = emptyList(),
     val isLoading: Boolean = false
-
 )
 
-class GameViewModel(
-    private val repository: Repository = Repository()
-) : ViewModel() {
+class GameViewModel(private val repository: Repository) : ViewModel() {
+    val uiState: StateFlow<GameCatalogUiState> = repository.juegos
+        .map { listaJuegos ->
+            GameCatalogUiState(juegos = listaJuegos, isLoading = false)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = GameCatalogUiState(isLoading = true)
+        )
 
-    private val _uiState = MutableStateFlow(GameCatalogUiState())
-    val uiState: StateFlow<GameCatalogUiState> = _uiState.asStateFlow()
-
-    init {
-        cargarCatalogo()
-    }
-
-
-    private fun cargarCatalogo() {
-        viewModelScope.launch {
-            _uiState.value = GameCatalogUiState(isLoading = true)
-            val catalogo = repository.getJuegosDelCatalogo()
-            _uiState.value = GameCatalogUiState(juegos = catalogo)
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as GameVerseApplication)
+                val repository = application.repository
+                GameViewModel(repository)
+            }
         }
     }
 }

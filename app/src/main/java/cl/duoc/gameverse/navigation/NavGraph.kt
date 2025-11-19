@@ -17,7 +17,7 @@ fun AppNavHost(navController: NavHostController) {
 
     val userViewModel: UserViewModel = viewModel()
     val forumViewModel: ForumViewModel = viewModel()
-    val gameViewModel: GameViewModel = viewModel ()
+    val gameViewModel: GameViewModel = viewModel(factory = GameViewModel.Factory)
 
     if (userViewModel.usuarios.isEmpty()) {
         userViewModel.registrarUsuario(Usuario("Gamer1", "gamer1@gmail.com", "1234"))
