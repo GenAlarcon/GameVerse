@@ -11,16 +11,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
 import cl.duoc.gameverse.domain.model.Usuario
 import cl.duoc.gameverse.navigation.AppRoutes
+import cl.duoc.gameverse.viewmodel.ValidacionesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaRegistro(
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    validacionesViewModel: ValidacionesViewModel = viewModel()
 ) {
 
     var nombre by remember { mutableStateOf("") }
@@ -115,39 +118,20 @@ fun PantallaRegistro(
         Button(
             onClick = {
 
-                var valido = true
+                val resultado = validacionesViewModel.validarRegistro(
+                    nombre,
+                    correo,
+                    contrasena,
+                    confirmar,
+                    userViewModel.usuarios
+                )
 
-                // Validación nombre
-                if (nombre.length < 3) {
-                    errorNombre = "Debe tener al menos 3 letras"
-                    valido = false
-                } else if (userViewModel.usuarios.any { it.nombre.equals(nombre, ignoreCase = true) }) {
-                    errorNombre = "El nombre ya está registrado"
-                    valido = false
-                }
+                errorNombre = resultado.errorNombre
+                errorCorreo = resultado.errorCorreo
+                errorContrasena = resultado.errorContrasena
+                errorConfirmar = resultado.errorConfirmar
 
-                // Validación correo
-                val dominios = listOf("@gmail.com", "@hotmail.es", "@outlook.com", "@yahoo.com")
-                if (!dominios.any { correo.endsWith(it) }) {
-                    errorCorreo = "Correo no válido (usa Gmail, Hotmail, Outlook o Yahoo)"
-                    valido = false
-                }
-
-                // Validación contraseña
-                if (contrasena.length !in 4..10) {
-                    errorContrasena = "Debe tener entre 4 y 10 caracteres"
-                    valido = false
-                }
-
-                // Validar confirmación
-                if (contrasena != confirmar) {
-                    errorConfirmar = "Las contraseñas no coinciden"
-                    valido = false
-                }
-
-                if (valido) {
-
-                    // ⭐ Usamos el ViewModel
+                if (resultado.ok) {
                     userViewModel.registrarUsuario(
                         Usuario(nombre, correo, contrasena)
                     )

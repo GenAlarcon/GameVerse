@@ -11,15 +11,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cl.duoc.gameverse.navigation.AppRoutes
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
+import cl.duoc.gameverse.viewmodel.ValidacionesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaLogin(
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    validacionesViewModel: ValidacionesViewModel = viewModel()
 ) {
 
     var identificador by remember { mutableStateOf("") }
@@ -72,27 +75,34 @@ fun PantallaLogin(
         Button(
             onClick = {
 
-                // Usamos el ViewModel para validar el login
+                val validarCampos = validacionesViewModel.validarLoginCampos(
+                    identificador,
+                    contrasena
+                )
+
+                if (!validarCampos.ok) {
+                    error = validarCampos.error
+                    return@Button
+                }
+
                 val usuarioEncontrado = userViewModel.validarLogin(
                     identificador,
                     contrasena
                 )
 
-                if (usuarioEncontrado != null) {
-
-                    Toast.makeText(
-                        contexto,
-                        "¡Bienvenido ${usuarioEncontrado.nombre}! 🎮",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    // Navegar al Home
-                    navController.navigate(AppRoutes.FORUM_HOME) {
-                        popUpTo(AppRoutes.LOGIN) { inclusive = true }
-                    }
-
-                } else {
+                if (usuarioEncontrado == null) {
                     error = "Usuario o contraseña incorrectos"
+                    return@Button
+                }
+
+                Toast.makeText(
+                    contexto,
+                    "¡Bienvenido ${usuarioEncontrado.nombre}! 🎮",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                navController.navigate(AppRoutes.FORUM_HOME) {
+                    popUpTo(AppRoutes.LOGIN) { inclusive = true }
                 }
 
             },
