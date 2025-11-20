@@ -86,7 +86,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón foro siempre visible
+            // Botón ir a inicio siempre visible
             Button(
                 onClick = onForumAction,
                 modifier = Modifier.fillMaxWidth()

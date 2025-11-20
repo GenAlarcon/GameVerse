@@ -16,12 +16,12 @@ class ForumViewModel : ViewModel() {
 
     init {
         posts = listOf(
-            Post("1", "Nuevo juego lanzado", "¡Acaba de salir 'Cyberpunk 2'!", "Novedades", "Admin"),
-            Post("2", "Evento especial", "No se pierdan el evento de doble XP este finde.", "Proximamente", "Admin"),
-            Post("3", "Mejores tips", "Mi tip es: no corras y siempre guarda la partida.", "Juegos", "Gamer1"),
-            Post("4", "Otra vez no...", "El juego más visto esta semana es Elden Ring, otra vez...", "Novedades", "Gamer2"),
-            Post("5", "Actualización 1.2", "El parche 1.2 arregla bugs de físicas en el juego.", "Novedades", "Admin"),
-            Post("6", "Torneo online", "¡Inscripciones abiertas para el torneo de Valorant!", "Proximamente", "Juan")
+            Post("1", "Nuevo juego lanzado", "¡Acaba de salir 'Cyberpunk 2'!", null,"Novedades", "Admin"),
+            Post("2", "Evento especial", "No se pierdan el evento de doble XP este finde.", null,"Proximamente", "Admin"),
+            Post("3", "Mejores tips", "Mi tip es: no corras y siempre guarda la partida.", null,"Juegos", "Gamer1"),
+            Post("4", "Otra vez no...", "El juego más visto esta semana es Elden Ring, otra vez...", null,"Novedades", "Gamer2"),
+            Post("5", "Actualización 1.2", "El parche 1.2 arregla bugs de físicas en el juego.", null,"Novedades", "Admin"),
+            Post("6", "Torneo online", "¡Inscripciones abiertas para el torneo de Valorant!", null,"Proximamente", "Juan")
         )
     }
 

@@ -1,6 +1,7 @@
 package cl.duoc.gameverse.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,15 +16,21 @@ import cl.duoc.gameverse.ui.screens.ForumJuegosScreen
 @Composable
 fun AppNavHost(navController: NavHostController) {
 
-    val userViewModel: UserViewModel = viewModel()
+    val userViewModel: UserViewModel = viewModel(factory = UserViewModel.Factory)
     val forumViewModel: ForumViewModel = viewModel()
     val gameViewModel: GameViewModel = viewModel(factory = GameViewModel.Factory)
 
-    if (userViewModel.usuarios.isEmpty()) {
-        userViewModel.registrarUsuario(Usuario("Gamer1", "gamer1@gmail.com", "1234"))
-        userViewModel.registrarUsuario(Usuario("Juan", "juan@gmail.com", "abcd"))
+    val usuarioActual = userViewModel.usuarioActual.value
+    LaunchedEffect(usuarioActual) {
+        if (usuarioActual != null) {
+            val currentRoute = navController.currentDestination?.route
+            if (currentRoute == AppRoutes.LOGIN || currentRoute == AppRoutes.REGISTRO) {
+                navController.navigate(AppRoutes.HOME) {
+                    popUpTo(AppRoutes.HOME) { inclusive = true }
+                }
+            }
+        }
     }
-
     NavHost(
         navController = navController,
         startDestination = AppRoutes.HOME

@@ -29,7 +29,6 @@ fun ForumProximo(
     viewModel: ForumProximosViewModel = viewModel()
 ) {
 
-    // Obtener lista de eventos próximos
     val posts by viewModel.proximosForos.collectAsState()
 
     Scaffold(
@@ -88,7 +87,7 @@ fun ForumProximo(
                             style = MaterialTheme.typography.titleLarge
                         )
 
-                        // Descripción / contenido
+                        // Descripción
                         Text(
                             text = post.contenido,
                             style = MaterialTheme.typography.bodyMedium,

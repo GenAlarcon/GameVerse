@@ -1,11 +1,8 @@
-package cl.duoc.gameverse.viewmodel
+package cl.duoc.gameverse.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import cl.duoc.gameverse.domain.model.Usuario
 
 class ValidacionesViewModel : ViewModel() {
-
-    // VALIDACIONES REGISTRO
 
     data class ResultadoValidacion(
         val ok: Boolean,
@@ -19,8 +16,7 @@ class ValidacionesViewModel : ViewModel() {
         nombre: String,
         correo: String,
         contrasena: String,
-        confirmar: String,
-        usuariosRegistrados: List<Usuario>
+        confirmar: String
     ): ResultadoValidacion {
 
         var errorNombre: String? = null
@@ -29,12 +25,9 @@ class ValidacionesViewModel : ViewModel() {
         var errorConfirmar: String? = null
         var valido = true
 
-        // Validación nombre
+        // Validación nombre (Solo formato)
         if (nombre.length < 3) {
             errorNombre = "Debe tener al menos 3 letras"
-            valido = false
-        } else if (usuariosRegistrados.any { it.nombre.equals(nombre, ignoreCase = true) }) {
-            errorNombre = "El nombre ya está registrado"
             valido = false
         }
 
@@ -98,8 +91,7 @@ class ValidacionesViewModel : ViewModel() {
             )
         }
 
-        // Validar formato básico si intenta usar correo
-        if ("@" in identificador && !identificador.contains(".")) {
+        if (identificador.contains("@") && !identificador.contains(".")) {
             return ResultadoValidacionLogin(
                 ok = false,
                 error = "Formato de correo inválido"

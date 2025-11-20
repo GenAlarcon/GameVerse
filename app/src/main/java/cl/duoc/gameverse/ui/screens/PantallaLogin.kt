@@ -1,142 +1,108 @@
 package cl.duoc.gameverse.ui.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import cl.duoc.gameverse.R
 import cl.duoc.gameverse.navigation.AppRoutes
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
-import cl.duoc.gameverse.viewmodel.ValidacionesViewModel
+import cl.duoc.gameverse.ui.viewmodel.ValidacionesViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaLogin(
-    navController: NavController,
-    userViewModel: UserViewModel,
-    validacionesViewModel: ValidacionesViewModel = viewModel()
+    navController: NavHostController,
+    userViewModel: UserViewModel
 ) {
-
-    var identificador by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
-
     val contexto = LocalContext.current
+    val validacionesViewModel: ValidacionesViewModel = viewModel()
+    var correo by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+    val loginError = userViewModel.loginError
+    val usuarioLogueado = userViewModel.usuarioActual.value
+
+    LaunchedEffect(usuarioLogueado) {
+        if (usuarioLogueado != null) {
+            Toast.makeText(
+                contexto,
+                "¡Bienvenido ${usuarioLogueado.nombre}! 🎮",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    LaunchedEffect(loginError) {
+        if (loginError != null) {
+            Toast.makeText(contexto, loginError, Toast.LENGTH_SHORT).show()
+            userViewModel.limpiarError()
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
-        Text("Iniciar sesión", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = identificador,
-            onValueChange = {
-                identificador = it.trim()
-                error = null
-            },
-            label = { Text("Usuario o correo") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+        Image(
+            painter = painterResource(id = R.drawable.icono2),
+            contentDescription = "Logo",
+            modifier = Modifier.size(150.dp)
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(32.dp))
+
+        OutlinedTextField(
+            value = correo,
+            onValueChange = { correo = it },
+            label = { Text("Correo o Usuario") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = contrasena,
-            onValueChange = {
-                contrasena = it
-                error = null
-            },
+            onValueChange = { contrasena = it },
             label = { Text("Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth()
         )
 
-        if (error != null) {
-            Text(error!!, color = MaterialTheme.colorScheme.error)
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
+                val validacion = validacionesViewModel.validarLoginCampos(correo, contrasena)
 
-                val validarCampos = validacionesViewModel.validarLoginCampos(
-                    identificador,
-                    contrasena
-                )
-
-                if (!validarCampos.ok) {
-                    error = validarCampos.error
-                    return@Button
+                if (validacion.ok) {
+                    userViewModel.validarLogin(correo, contrasena)
+                } else {
+                    Toast.makeText(contexto, validacion.error, Toast.LENGTH_SHORT).show()
                 }
-
-                val usuarioEncontrado = userViewModel.validarLogin(
-                    identificador,
-                    contrasena
-                )
-
-                if (usuarioEncontrado == null) {
-                    error = "Usuario o contraseña incorrectos"
-                    return@Button
-                }
-
-                Toast.makeText(
-                    contexto,
-                    "¡Bienvenido ${usuarioEncontrado.nombre}! 🎮",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                navController.navigate(AppRoutes.FORUM_HOME) {
-                    popUpTo(AppRoutes.LOGIN) { inclusive = true }
-                }
-
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Iniciar sesión")
+            Text("Ingresar")
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                Toast.makeText(
-                    contexto,
-                    "Google Sign-In aún no implementado",
-                    Toast.LENGTH_SHORT
-                ).show()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
-            )
-        ) {
-            Text("Iniciar sesión con Google")
+        TextButton(onClick = { navController.navigate(AppRoutes.REGISTRO) }) {
+            Text("¿No tienes cuenta? Regístrate aquí")
         }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = "¿No tienes cuenta? Regístrate aquí",
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable {
-                navController.navigate("registro")
-            }
-        )
     }
 }

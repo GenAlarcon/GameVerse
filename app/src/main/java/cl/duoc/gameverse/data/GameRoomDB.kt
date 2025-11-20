@@ -7,13 +7,15 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import cl.duoc.gameverse.R
 import cl.duoc.gameverse.domain.model.Game
+import cl.duoc.gameverse.domain.model.Usuario
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities = [Game::class], version = 1, exportSchema = false)
+@Database(entities = [Game::class, Usuario::class], version = 2, exportSchema = false)
 abstract class GameRoomDB : RoomDatabase() {
 
     abstract fun gameDao(): GameDao
+    abstract fun usuarioDao(): UsuarioDao
 
     private class GameDatabaseCallback(
         private val scope: CoroutineScope
@@ -41,6 +43,7 @@ abstract class GameRoomDB : RoomDatabase() {
             gameDao.insertAll(misJuegos)
         }
     }
+
     companion object {
         @Volatile
         private var INSTANCE: GameRoomDB? = null
@@ -50,9 +53,10 @@ abstract class GameRoomDB : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     GameRoomDB::class.java,
-                    "game_database" // Nombre del archivo guardado en el celular
+                    "game_database"
                 )
                     .addCallback(GameDatabaseCallback(scope))
+                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance

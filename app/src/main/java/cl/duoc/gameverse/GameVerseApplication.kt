@@ -9,5 +9,5 @@ import kotlinx.coroutines.SupervisorJob
 class GameVerseApplication : Application() {
     val applicationScope = CoroutineScope(SupervisorJob())
     val database by lazy { GameRoomDB.getDatabase(this, applicationScope) }
-    val repository by lazy { Repository(database.gameDao()) }
+    val repository by lazy { Repository(database.gameDao(), database.usuarioDao()) }
 }

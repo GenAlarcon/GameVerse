@@ -27,14 +27,12 @@ fun ForumNovedad(
     navController: NavHostController,
     forumViewModel: ForumViewModel
 ) {
-    // Filtrar solo posts de la categoría "Novedades"
     val posts: List<Post> = forumViewModel.getPostsByCategory("Novedades")
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Novedades") },
-                // Botón de volver al stack anterior
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -46,7 +44,7 @@ fun ForumNovedad(
             )
         },
         bottomBar = {
-            NavegacionBar(navController) // Mantener la barra inferior
+            NavegacionBar(navController)
         }
     ) { innerPadding ->
 
@@ -76,7 +74,7 @@ fun ForumNovedad(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // DESCRIPCIÓN (contenido)
+                        // DESCRIPCIÓN
                         Text(
                             text = post.contenido,
                             style = MaterialTheme.typography.bodyMedium,
@@ -87,7 +85,6 @@ fun ForumNovedad(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        // FILA CATEGORÍA - AUTOR - ESTRELLA
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
@@ -106,7 +103,6 @@ fun ForumNovedad(
 
                             Spacer(modifier = Modifier.weight(1f))
 
-                            // ESTRELLA FAVORITO
                             Text(
                                 text = if (forumViewModel.favoritos.contains(post.id)) "★" else "☆",
                                 color = Color.Yellow,
@@ -119,7 +115,6 @@ fun ForumNovedad(
                 }
             }
 
-            // Si no hay posts, puedes mostrar un ítem con mensaje
             if (posts.isEmpty()) {
                 item {
                     Box(

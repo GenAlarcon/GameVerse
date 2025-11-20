@@ -4,6 +4,7 @@ data class Post(
     val id: String,
     val titulo: String,
     val contenido: String,
+    val imageUri:  String?,
     val categoria: String?,
     val autor: String
 )

@@ -3,6 +3,7 @@ import androidx.annotation.DrawableRes
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 @Entity(tableName = "juegos")
 data class Game(
     @PrimaryKey

@@ -13,10 +13,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import cl.duoc.gameverse.ui.viewmodel.UserViewModel
 import cl.duoc.gameverse.domain.model.Usuario
 import cl.duoc.gameverse.navigation.AppRoutes
-import cl.duoc.gameverse.viewmodel.ValidacionesViewModel
+import cl.duoc.gameverse.ui.viewmodel.UserViewModel
+import cl.duoc.gameverse.ui.viewmodel.ValidacionesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,6 +25,7 @@ fun PantallaRegistro(
     userViewModel: UserViewModel,
     validacionesViewModel: ValidacionesViewModel = viewModel()
 ) {
+    val contexto = LocalContext.current
 
     var nombre by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
@@ -35,8 +36,27 @@ fun PantallaRegistro(
     var errorCorreo by remember { mutableStateOf<String?>(null) }
     var errorContrasena by remember { mutableStateOf<String?>(null) }
     var errorConfirmar by remember { mutableStateOf<String?>(null) }
+    val loginError = userViewModel.loginError
 
-    val contexto = LocalContext.current
+
+    val usuarioLogueado = userViewModel.usuarioActual.value
+
+
+    LaunchedEffect(usuarioLogueado) {
+        if (usuarioLogueado != null) {
+            Toast.makeText(contexto, "Registro exitoso 🎮", Toast.LENGTH_LONG).show()
+            navController.navigate(AppRoutes.LOGIN) {
+                popUpTo("registro") { inclusive = true }
+            }
+        }
+    }
+
+    LaunchedEffect(loginError) {
+        if (loginError != null) {
+            Toast.makeText(contexto, loginError, Toast.LENGTH_LONG).show()
+            userViewModel.limpiarError()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -59,12 +79,10 @@ fun PantallaRegistro(
             modifier = Modifier.fillMaxWidth(),
             isError = errorNombre != null
         )
-        if (errorNombre != null)
-            Text(errorNombre!!, color = MaterialTheme.colorScheme.error)
+        if (errorNombre != null) Text(errorNombre!!, color = MaterialTheme.colorScheme.error)
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // CORREO
         OutlinedTextField(
             value = correo,
             onValueChange = {
@@ -76,12 +94,10 @@ fun PantallaRegistro(
             modifier = Modifier.fillMaxWidth(),
             isError = errorCorreo != null
         )
-        if (errorCorreo != null)
-            Text(errorCorreo!!, color = MaterialTheme.colorScheme.error)
+        if (errorCorreo != null) Text(errorCorreo!!, color = MaterialTheme.colorScheme.error)
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // CONTRASEÑA
         OutlinedTextField(
             value = contrasena,
             onValueChange = {
@@ -93,12 +109,10 @@ fun PantallaRegistro(
             modifier = Modifier.fillMaxWidth(),
             isError = errorContrasena != null
         )
-        if (errorContrasena != null)
-            Text(errorContrasena!!, color = MaterialTheme.colorScheme.error)
+        if (errorContrasena != null) Text(errorContrasena!!, color = MaterialTheme.colorScheme.error)
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // CONFIRMAR CONTRASEÑA
         OutlinedTextField(
             value = confirmar,
             onValueChange = {
@@ -110,20 +124,14 @@ fun PantallaRegistro(
             modifier = Modifier.fillMaxWidth(),
             isError = errorConfirmar != null
         )
-        if (errorConfirmar != null)
-            Text(errorConfirmar!!, color = MaterialTheme.colorScheme.error)
+        if (errorConfirmar != null) Text(errorConfirmar!!, color = MaterialTheme.colorScheme.error)
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = {
-
                 val resultado = validacionesViewModel.validarRegistro(
-                    nombre,
-                    correo,
-                    contrasena,
-                    confirmar,
-                    userViewModel.usuarios
+                    nombre, correo, contrasena, confirmar
                 )
 
                 errorNombre = resultado.errorNombre
@@ -133,19 +141,8 @@ fun PantallaRegistro(
 
                 if (resultado.ok) {
                     userViewModel.registrarUsuario(
-                        Usuario(nombre, correo, contrasena)
+                        Usuario(nombre = nombre, correo = correo, contrasena = contrasena)
                     )
-
-                    Toast.makeText(contexto, "Registro exitoso 🎮", Toast.LENGTH_SHORT).show()
-
-                    nombre = ""
-                    correo = ""
-                    contrasena = ""
-                    confirmar = ""
-
-                    navController.navigate(AppRoutes.LOGIN) {
-                        popUpTo("registro") { inclusive = true }
-                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()

@@ -86,7 +86,7 @@ dependencies {
     val navigationVersion = "2.7.7"
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
     implementation("androidx.navigation:navigation-compose:$navigationVersion")
-
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
 
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
@@ -99,4 +99,6 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
 }
