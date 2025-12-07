@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,17 +37,17 @@ fun PantallaRegistro(
     var errorCorreo by remember { mutableStateOf<String?>(null) }
     var errorContrasena by remember { mutableStateOf<String?>(null) }
     var errorConfirmar by remember { mutableStateOf<String?>(null) }
+
     val loginError = userViewModel.loginError
-
-
     val usuarioLogueado = userViewModel.usuarioActual.value
-
 
     LaunchedEffect(usuarioLogueado) {
         if (usuarioLogueado != null) {
-            Toast.makeText(contexto, "Registro exitoso 🎮", Toast.LENGTH_LONG).show()
-            navController.navigate(AppRoutes.LOGIN) {
-                popUpTo("registro") { inclusive = true }
+            Toast.makeText(contexto, "¡Bienvenido ${usuarioLogueado.nombre}! 🎮", Toast.LENGTH_LONG).show()
+
+            // al registrarse, dirige al home
+            navController.navigate(AppRoutes.FORUM_HOME) {
+                popUpTo(AppRoutes.LOGIN) { inclusive = true }
             }
         }
     }
@@ -59,22 +60,16 @@ fun PantallaRegistro(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
+        modifier = Modifier.fillMaxSize().padding(20.dp),
         verticalArrangement = Arrangement.Center
     ) {
-
         Text("Registro", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(20.dp))
 
-        // NOMBRE
+
         OutlinedTextField(
             value = nombre,
-            onValueChange = {
-                nombre = it.trim()
-                errorNombre = null
-            },
+            onValueChange = { nombre = it },
             label = { Text("Nombre de usuario") },
             modifier = Modifier.fillMaxWidth(),
             isError = errorNombre != null
@@ -83,12 +78,10 @@ fun PantallaRegistro(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        // CORREO
         OutlinedTextField(
             value = correo,
-            onValueChange = {
-                correo = it.trim()
-                errorCorreo = null
-            },
+            onValueChange = { correo = it.trim() },
             label = { Text("Correo electrónico") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
@@ -98,12 +91,10 @@ fun PantallaRegistro(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        // CONTRASEÑA
         OutlinedTextField(
             value = contrasena,
-            onValueChange = {
-                contrasena = it
-                errorContrasena = null
-            },
+            onValueChange = { contrasena = it.trim() },
             label = { Text("Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
@@ -113,12 +104,10 @@ fun PantallaRegistro(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        // CONFIRMAR
         OutlinedTextField(
             value = confirmar,
-            onValueChange = {
-                confirmar = it
-                errorConfirmar = null
-            },
+            onValueChange = { confirmar = it.trim() },
             label = { Text("Confirmar contraseña") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
@@ -130,8 +119,13 @@ fun PantallaRegistro(
 
         Button(
             onClick = {
+                val nombreFinal = nombre.trim()
+                val correoFinal = correo.trim()
+                val passFinal = contrasena.trim()
+                val confFinal = confirmar.trim()
+
                 val resultado = validacionesViewModel.validarRegistro(
-                    nombre, correo, contrasena, confirmar
+                    nombreFinal, correoFinal, passFinal, confFinal
                 )
 
                 errorNombre = resultado.errorNombre
@@ -141,7 +135,7 @@ fun PantallaRegistro(
 
                 if (resultado.ok) {
                     userViewModel.registrarUsuario(
-                        Usuario(nombre = nombre, correo = correo, contrasena = contrasena)
+                        Usuario(nombre = nombreFinal, correo = correoFinal, contrasena = passFinal)
                     )
                 }
             },
@@ -156,9 +150,7 @@ fun PantallaRegistro(
             text = "¿Ya tienes cuenta? Inicia sesión",
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {
-                navController.navigate(AppRoutes.LOGIN) {
-                    popUpTo("registro") { inclusive = true }
-                }
+                navController.navigate(AppRoutes.LOGIN) { popUpTo("registro") { inclusive = true } }
             }
         )
     }

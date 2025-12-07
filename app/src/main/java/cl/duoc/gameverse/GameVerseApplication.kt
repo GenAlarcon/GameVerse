@@ -5,7 +5,7 @@ import cl.duoc.gameverse.data.GameRoomDB
 import cl.duoc.gameverse.data.Repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-
+//  inicializa la BBDD
 class GameVerseApplication : Application() {
     val applicationScope = CoroutineScope(SupervisorJob())
     val database by lazy { GameRoomDB.getDatabase(this, applicationScope) }

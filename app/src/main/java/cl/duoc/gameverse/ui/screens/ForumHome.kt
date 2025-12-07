@@ -69,7 +69,7 @@ fun ForumHome(
                     "Novedades" to AppRoutes.FORUM_NOVEDADES,
                     "Juegos" to AppRoutes.FORUM_JUEGOS,
                     "Próximamente" to AppRoutes.FORUM_PROXIMAMENTE,
-                    "Tendencia" to AppRoutes.FORUM_TENDENCIA
+                    "Ofertas" to AppRoutes.FORUM_OFERTAS
                 )
                 Column(Modifier.fillMaxWidth()) {
                     categorias.chunked(2).forEach { fila ->

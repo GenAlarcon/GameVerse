@@ -27,8 +27,10 @@ fun PantallaLogin(
 ) {
     val contexto = LocalContext.current
     val validacionesViewModel: ValidacionesViewModel = viewModel()
+
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
+
     val loginError = userViewModel.loginError
     val usuarioLogueado = userViewModel.usuarioActual.value
 
@@ -37,7 +39,7 @@ fun PantallaLogin(
             Toast.makeText(
                 contexto,
                 "¡Bienvenido ${usuarioLogueado.nombre}! 🎮",
-                Toast.LENGTH_LONG
+                Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -56,6 +58,7 @@ fun PantallaLogin(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Logo
         Image(
             painter = painterResource(id = R.drawable.icono2),
             contentDescription = "Logo",
@@ -64,6 +67,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Campo Correo
         OutlinedTextField(
             value = correo,
             onValueChange = { correo = it },
@@ -73,6 +77,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Campo Contraseña
         OutlinedTextField(
             value = contrasena,
             onValueChange = { contrasena = it },
@@ -84,6 +89,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Botón Ingresar
         Button(
             onClick = {
                 val validacion = validacionesViewModel.validarLoginCampos(correo, contrasena)
@@ -100,6 +106,7 @@ fun PantallaLogin(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
 
         TextButton(onClick = { navController.navigate(AppRoutes.REGISTRO) }) {
             Text("¿No tienes cuenta? Regístrate aquí")

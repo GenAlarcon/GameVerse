@@ -12,7 +12,9 @@ import cl.duoc.gameverse.ui.viewmodel.ForumViewModel
 import cl.duoc.gameverse.domain.model.Usuario
 import cl.duoc.gameverse.ui.viewmodel.GameViewModel
 import cl.duoc.gameverse.ui.screens.ForumJuegosScreen
+import cl.duoc.gameverse.ui.viewmodel.DealsViewModel
 
+//como se conectan
 @Composable
 fun AppNavHost(navController: NavHostController) {
 
@@ -20,13 +22,14 @@ fun AppNavHost(navController: NavHostController) {
     val forumViewModel: ForumViewModel = viewModel()
     val gameViewModel: GameViewModel = viewModel(factory = GameViewModel.Factory)
 
+
     val usuarioActual = userViewModel.usuarioActual.value
     LaunchedEffect(usuarioActual) {
         if (usuarioActual != null) {
-            val currentRoute = navController.currentDestination?.route
+            val currentRoute = navController.currentBackStackEntry?.destination?.route
             if (currentRoute == AppRoutes.LOGIN || currentRoute == AppRoutes.REGISTRO) {
-                navController.navigate(AppRoutes.HOME) {
-                    popUpTo(AppRoutes.HOME) { inclusive = true }
+                navController.navigate(AppRoutes.FORUM_HOME) {
+                    popUpTo(AppRoutes.HOME) { inclusive = false }
                 }
             }
         }
@@ -72,8 +75,12 @@ fun AppNavHost(navController: NavHostController) {
             ForumProximo(navController = navController)
         }
 
-        composable(AppRoutes.FORUM_TENDENCIA) {
-            ForumTendencia(navController = navController)
+        composable(AppRoutes.FORUM_OFERTAS) {
+            val dealsViewModel: DealsViewModel = viewModel(factory = DealsViewModel.Factory)
+            ForumOfertasScreen(
+                navController = navController,
+                dealsViewModel = dealsViewModel
+            )
         }
 
     }

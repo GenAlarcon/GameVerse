@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import cl.duoc.gameverse.domain.model.Usuario
-
+//definir que hace con la BBDD
 @Dao
 interface UsuarioDao {
 

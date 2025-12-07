@@ -9,5 +9,6 @@ object AppRoutes {
     const val FORUM_NOVEDADES = "forum_novedades"
     const val FORUM_JUEGOS = "forum_juegos"
     const val FORUM_PROXIMAMENTE = "forum_proximamente"
-    const val FORUM_TENDENCIA = "forum_tendencia"
+
+    const val FORUM_OFERTAS = "forum_ofertas"
 }

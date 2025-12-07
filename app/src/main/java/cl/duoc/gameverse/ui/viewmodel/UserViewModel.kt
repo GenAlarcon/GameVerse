@@ -17,41 +17,83 @@ import kotlinx.coroutines.launch
 
 class UserViewModel(private val repository: Repository) : ViewModel() {
 
+    // --- ESTADO DE USUARIO (Persistente en BD) ---
     var usuarioActual = mutableStateOf<Usuario?>(null)
         private set
+
     var loginError by mutableStateOf<String?>(null)
         private set
+
+    // --- ESTADO DE JUEGOS (En memoria por sesión) ---
+    // (Estas listas se reinician al cerrar la app)
     var proximasAventuras by mutableStateOf<List<JuegoUsuario>>(emptyList())
         private set
+
     var juegoEnCurso by mutableStateOf<JuegoUsuario?>(null)
         private set
+
+
+    // ----------------------------------------------------------------
+    // FUNCIONES DE BASE DE DATOS (Login y Registro)
+    // ----------------------------------------------------------------
 
     fun registrarUsuario(usuario: Usuario) {
         viewModelScope.launch {
             try {
+                // 1. Intentamos registrar en la Nube y Local
                 repository.registrarUsuario(usuario)
+
+                // 2. Si no hubo error, actualizamos el estado para entrar
                 usuarioActual.value = usuario
                 loginError = null
             } catch (e: Exception) {
-                loginError = "El usuario ya existe."
+                // Capturamos el error que lanza el repositorio (ej. "Error API: 409 Conflict")
+                val mensaje = e.message ?: "Error desconocido"
+                if (mensaje.contains("409") || mensaje.contains("existe")) {
+                    loginError = "El usuario ya existe."
+                } else if (mensaje.contains("Failed to connect")) {
+                    loginError = "No se pudo conectar al servidor."
+                } else {
+                    loginError = "Error al registrar: $mensaje"
+                }
             }
         }
     }
 
     fun validarLogin(identificador: String, contrasena: String) {
         viewModelScope.launch {
-            val usuarioEncontrado = repository.loginUsuario(identificador, contrasena)
-            if (usuarioEncontrado != null) {
-                usuarioActual.value = usuarioEncontrado
-                loginError = null
-            } else {
-                loginError = "Credenciales incorrectas."
+            // Limpiamos errores previos
+            loginError = null
+
+            try {
+                // El repositorio se encarga de probar en la Nube y luego en Local
+                val usuarioEncontrado = repository.loginUsuario(identificador, contrasena)
+
+                if (usuarioEncontrado != null) {
+                    usuarioActual.value = usuarioEncontrado
+                    loginError = null
+                } else {
+                    // Si retorna null, es credenciales inválidas
+                    loginError = "Credenciales incorrectas."
+                }
+            } catch (e: Exception) {
+                val mensaje = e.message ?: ""
+                if (mensaje.contains("401")) {
+                    loginError = "Credenciales incorrectas."
+                } else if (mensaje.contains("Failed to connect")) {
+                    // Si falló la nube, el repo debió haber intentado local.
+                    // Si llegamos aquí, es que ambos fallaron o algo grave pasó.
+                    loginError = "Error de conexión y usuario no encontrado localmente."
+                } else {
+                    loginError = "Error de inicio de sesión: $mensaje"
+                }
             }
         }
     }
 
     fun cerrarSesion() {
         usuarioActual.value = null
+        // Limpiamos datos de sesión
         juegoEnCurso = null
         proximasAventuras = emptyList()
         loginError = null
@@ -61,13 +103,16 @@ class UserViewModel(private val repository: Repository) : ViewModel() {
         loginError = null
     }
 
+
+    // ----------------------------------------------------------------
+    // FUNCIONES DE JUEGOS (Lógica de listas en memoria)
+    // ----------------------------------------------------------------
+
     fun agregarAventura(game: Game) {
-        // Verificamos que no esté ya en la lista ni en curso
         val yaEstaEnAventuras = proximasAventuras.find { it.game.id == game.id } != null
         val yaEstaEnCurso = juegoEnCurso?.game?.id == game.id
 
         if (!yaEstaEnAventuras && !yaEstaEnCurso) {
-            // Creamos la relación con progreso 0
             val nuevoJuegoUsuario = JuegoUsuario(game = game, progreso = 0.0f)
             proximasAventuras = proximasAventuras + nuevoJuegoUsuario
         }
@@ -79,6 +124,7 @@ class UserViewModel(private val repository: Repository) : ViewModel() {
         juegoEnCurso = juego
 
         proximasAventuras = proximasAventuras.filter { it.game.id != juego.game.id }
+
         if (juegoQueEstabaEnCurso != null) {
             proximasAventuras = proximasAventuras + juegoQueEstabaEnCurso
         }
@@ -90,6 +136,9 @@ class UserViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
+    // ----------------------------------------------------------------
+    // FACTORY
+    // ----------------------------------------------------------------
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

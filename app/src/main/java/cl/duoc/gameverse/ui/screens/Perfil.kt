@@ -16,9 +16,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import cl.duoc.gameverse.R
+import cl.duoc.gameverse.domain.model.Game
 import cl.duoc.gameverse.domain.model.JuegoUsuario
 import cl.duoc.gameverse.navigation.NavegacionBar
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
+import coil.compose.AsyncImage
+
+private val Game.imageResId: Int
+    get() {
+        TODO()
+    }
 
 @Composable
 fun PerfilScreen(navController: NavHostController, userViewModel: UserViewModel) {
@@ -200,8 +207,8 @@ fun AventuraItem(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = game.imageResId),
+            AsyncImage(
+                model = game.imagen, // Usamos la URL o URI
                 contentDescription = game.nombre,
                 modifier = Modifier
                     .size(80.dp)

@@ -1,20 +1,18 @@
 package cl.duoc.gameverse.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext // IMPORTANTE: Para el contexto
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -23,6 +21,8 @@ import cl.duoc.gameverse.domain.model.Game
 import cl.duoc.gameverse.navigation.NavegacionBar
 import cl.duoc.gameverse.ui.viewmodel.GameViewModel
 import cl.duoc.gameverse.ui.viewmodel.UserViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest // IMPORTANTE: Para configurar la petición de imagen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +32,6 @@ fun ForumJuegosScreen(
     gameViewModel: GameViewModel,
     userViewModel: UserViewModel
 ) {
-
     val uiState by gameViewModel.uiState.collectAsState()
     var juegoSeleccionado by remember { mutableStateOf<Game?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -45,32 +44,24 @@ fun ForumJuegosScreen(
                 title = { Text("Catálogo de Juegos") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
-                        )
+                        Icon(Icons.Default.ArrowBack, "Volver")
                     }
                 }
             )
         },
-        bottomBar = {
-            NavegacionBar(navController)
-        }
+        bottomBar = { NavegacionBar(navController) }
     ) { innerPadding ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 CatalogoJuegosGrid(
                     juegos = uiState.juegos,
-                    onGameClick = { game ->
-                        juegoSeleccionado = game
-                    }
+                    onGameClick = { juego -> juegoSeleccionado = juego }
                 )
             }
         }
@@ -79,9 +70,7 @@ fun ForumJuegosScreen(
     if (juegoSeleccionado != null) {
         GameDetailDialog(
             game = juegoSeleccionado!!,
-            onDismiss = {
-                juegoSeleccionado = null
-            },
+            onDismiss = { juegoSeleccionado = null },
             onAddAdventure = {
                 userViewModel.agregarAventura(juegoSeleccionado!!)
                 juegoSeleccionado = null
@@ -97,7 +86,7 @@ fun ForumJuegosScreen(
 fun CatalogoJuegosGrid(juegos: List<Game>, onGameClick: (Game) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -115,11 +104,15 @@ fun GameCard(game: Game, onClick: () -> Unit) {
             .fillMaxWidth()
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFB2E2C8))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column {
-            Image(
-                painter = painterResource(id = game.imageResId),
+            // CORRECCIÓN: Usamos ImageRequest con el contexto para resolver recursos locales
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(game.imagen)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = "Portada de ${game.nombre}",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,8 +150,12 @@ fun GameDetailDialog(
         title = { Text(game.nombre) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    painter = painterResource(id = game.imageResId),
+                // CORRECCIÓN: Igual aquí, usamos ImageRequest con contexto
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(game.imagen)
+                        .crossfade(true)
+                        .build(),
                     contentDescription = game.nombre,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -167,19 +164,9 @@ fun GameDetailDialog(
                     contentScale = ContentScale.Crop
                 )
                 Text("Género: ${game.genero}", style = MaterialTheme.typography.bodyLarge)
-
             }
         },
-
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cerrar")
-            }
-        },
-        confirmButton = {
-            Button(onClick = onAddAdventure) {
-                Text("Agregar Aventura")
-            }
-        }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cerrar") } },
+        confirmButton = { Button(onClick = onAddAdventure) { Text("Agregar Aventura") } }
     )
 }

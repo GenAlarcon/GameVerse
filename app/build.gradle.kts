@@ -90,7 +90,7 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
-    //Base de Datos)
+    //Base de Datos
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
