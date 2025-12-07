@@ -100,5 +100,14 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // test
+
+    testImplementation("junit:junit:4.13.2")
+    // MockK (Para simular objetos)
+    testImplementation("io.mockk:mockk:1.13.8")
+    // Coroutines Test (Para probar ViewModels y funciones suspend)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    // Arch Core Testing (Para LiveData/StateFlow en tests)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 
 }
